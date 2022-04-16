@@ -17,8 +17,7 @@ router.get('/get-transactions', function (req, res, next) {
     const solana = new web3.Connection(connection)
     const transSignatures = await solana.getConfirmedSignaturesForAddress2(publicKey)
     for (const transSignature of transSignatures) {
-      console.log(signature)
-      const transaction = await solana.getTransaction(transSignature.signature);
+      const transaction = await solana.getTransaction(transSignature.signature)
       if(transaction){
         transactions.push(transaction)
       }
