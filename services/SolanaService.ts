@@ -1,7 +1,7 @@
 import * as web3 from '@solana/web3.js'
 import bs58 from 'bs58'
 
-type Cluster = 'devnet' | 'testnet' | 'mainnet-beta'
+export type SolanaCluster = 'devnet' | 'testnet' | 'mainnet-beta'
 
 interface IWallet {
     publicKey: string,
@@ -12,10 +12,18 @@ interface IWallet {
 
 export class SolanaService {
 
-    private connection;
+    private connection
 
-    constructor(cluster: Cluster) {
+    constructor(cluster: SolanaCluster) {
         this.connection = new web3.Connection(web3.clusterApiUrl(cluster), "confirmed")
+    }
+
+    static getSolanaClusters(): SolanaCluster[]{
+        return ['devnet', 'testnet', "mainnet-beta"]
+    }
+
+    static isValidCluster(cluster : string | undefined): boolean{
+        return SolanaService.getSolanaClusters().includes(cluster as SolanaCluster)
     }
 
     generateWallet(): IWallet {
