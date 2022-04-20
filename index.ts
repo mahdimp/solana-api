@@ -2,15 +2,15 @@ import { SolanaService } from './services/SolanaService';
 import express, { Express, Request, Response } from 'express'
 
 const app: Express = express()
+app.use(express.json())
 const port = process.env.PORT || 3000
-const solanaService = new SolanaService('testnet')
+const solanaService = new SolanaService('devnet')
 
-// create a new transaction
-app.post('/tx/new', async function (req: Request, res: Response) {
+app.post('/transactions', async function (req: Request, res: Response) {
   try {
     const { to, amount, secretKey } = req.body
     if (!amount || !to || !secretKey) {
-      return res.status(400).send('Missing required parameters')
+      res.status(400).json({ error: 'missing parameters' })
     }
     const signature = await solanaService.newTransaction(to, amount, secretKey)
     return res.json({
@@ -24,8 +24,7 @@ app.post('/tx/new', async function (req: Request, res: Response) {
   }
 })
 
-// get list of in transactions of an address
-app.get('/wallet/transactions/:address', async function (req: Request, res: Response) {
+app.get('/transactions/:address', async function (req: Request, res: Response) {
   try {
     const { address } = req.params
     const transactions = await solanaService.getTransactions(address)
@@ -40,13 +39,12 @@ app.get('/wallet/transactions/:address', async function (req: Request, res: Resp
   }
 })
 
-// get balance of an address
 app.get('/wallet/balance/:address', async function (req: Request, res: Response) {
   try {
     const { address } = req.params
     const balance = await solanaService.getBalance(address)
     return res.json({
-      balance
+      balance : solanaService.convertLamportsToSol(balance)
     })
   }
   catch (e) {
@@ -57,13 +55,10 @@ app.get('/wallet/balance/:address', async function (req: Request, res: Response)
   }
 })
 
-// create new wallet key pair
-app.get('/wallet/new', async function (_, res: Response) {
+app.post('/wallet/new', async function (_, res: Response) {
   try {
     const wallet = solanaService.generateWallet()
-    return res.json({
-      wallet
-    })
+    return res.json({ wallet })
   } catch (e) {
     const error = e as Error
     res.json({

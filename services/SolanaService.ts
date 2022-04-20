@@ -63,7 +63,7 @@ export class SolanaService {
             web3.SystemProgram.transfer({
                 fromPubkey: sender.publicKey,
                 toPubkey: receiver,
-                lamports: web3.LAMPORTS_PER_SOL / amount,
+                lamports: this.convertSolToLamports(amount),
             })
         )
         transaction.feePayer = sender.publicKey
@@ -78,5 +78,13 @@ export class SolanaService {
                 signature
             })
         }
+    }
+
+    convertLamportsToSol(lamports: number): number {
+        return lamports / web3.LAMPORTS_PER_SOL
+    }
+
+    convertSolToLamports(solAmount: number): number {
+        return solAmount * web3.LAMPORTS_PER_SOL
     }
 }
