@@ -18,11 +18,11 @@ export class SolanaService {
         this.connection = new web3.Connection(web3.clusterApiUrl(cluster), "confirmed")
     }
 
-    static getSolanaClusters(): SolanaCluster[]{
+    static getSolanaClusters(): SolanaCluster[] {
         return ['devnet', 'testnet', "mainnet-beta"]
     }
 
-    static isValidCluster(cluster : string | undefined): boolean{
+    static isValidCluster(cluster: string | undefined): boolean {
         return SolanaService.getSolanaClusters().includes(cluster as SolanaCluster)
     }
 
@@ -45,13 +45,16 @@ export class SolanaService {
     async getTransactions(address: string) {
         const publicKey = new web3.PublicKey(address)
         const transactions = []
-        const transSignatures: any = await this.connection.getConfirmedSignaturesForAddress2(publicKey, { limit: 5 })
+        const transSignatures: any = await this.connection.getConfirmedSignaturesForAddress2(publicKey, { limit: 10 })
         for (const transSignature of transSignatures) {
             const transaction = await this.connection.getParsedTransaction(transSignature.signature)
+            let parsedInfo: any
             if (transaction) {
                 const instructions = transaction.transaction.message.instructions
                 const instruction: any = instructions?.length ? instructions[0] : null
-                const parsedInfo = instruction?.parsed?.info
+                parsedInfo = instruction?.parsed?.info
+            }
+            if (transaction && parsedInfo) {
                 transactions.push({
                     status: transSignature.confirmationStatus,
                     signature: transSignature.signature,
@@ -59,6 +62,7 @@ export class SolanaService {
                     parsedInfo
                 })
             }
+
         }
         return transactions
     }
