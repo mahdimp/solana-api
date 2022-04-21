@@ -1,6 +1,7 @@
 import * as web3 from '@solana/web3.js'
 import bs58 from 'bs58'
 
+
 export type SolanaCluster = 'devnet' | 'testnet' | 'mainnet-beta'
 
 interface IWallet {
@@ -45,21 +46,36 @@ export class SolanaService {
     async getTransactions(address: string) {
         const publicKey = new web3.PublicKey(address)
         const transactions = []
+        let instruction: any
         const transSignatures: any = await this.connection.getConfirmedSignaturesForAddress2(publicKey, { limit: 10 })
         for (const transSignature of transSignatures) {
-            const transaction = await this.connection.getParsedTransaction(transSignature.signature)
-            let parsedInfo: any
+            const transaction = await this.connection.getParsedTransaction(transSignature.signature, "finalized")
+            let parsed: any
             if (transaction) {
                 const instructions = transaction.transaction.message.instructions
-                const instruction: any = instructions?.length ? instructions[0] : null
-                parsedInfo = instruction?.parsed?.info
+                instruction = instructions?.length ? instructions[0] : null
+                parsed = instruction?.parsed
             }
-            if (transaction && parsedInfo) {
+            if (transaction 
+                && parsed
+                && parsed.type == 'transfer'
+                && parsed.info
+                && !parsed.tokenAmount
+                && parsed.info.destination === address
+                ) {
                 transactions.push({
+                    meta: {
+                        fee: transaction.meta?.fee,
+                        err: transaction.meta?.err
+                    },
                     status: transSignature.confirmationStatus,
                     signature: transSignature.signature,
+                    slot: transSignature.slot,
                     blockTime: transaction.blockTime,
-                    parsedInfo
+                    from: parsed.info.source,
+                    to: parsed.info.destination,
+                    amount: this.convertLamportsToSol(parsed.lamports),
+                    amountInLamports: parsed.lamports,
                 })
             }
 
