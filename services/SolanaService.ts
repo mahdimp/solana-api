@@ -47,9 +47,9 @@ export class SolanaService {
         const publicKey = new web3.PublicKey(address)
         const transactions = []
         let instruction: any
-        const transSignatures: any = await this.connection.getConfirmedSignaturesForAddress2(publicKey, { limit: 10 })
+        const transSignatures: any = await this.connection.getConfirmedSignaturesForAddress2(publicKey, { limit: 30 })
         for (const transSignature of transSignatures) {
-            const transaction = await this.connection.getParsedTransaction(transSignature.signature, "finalized")
+            const transaction = await this.connection.getParsedTransaction(transSignature.signature)
             let parsed: any
             if (transaction) {
                 const instructions = transaction.transaction.message.instructions
@@ -57,11 +57,11 @@ export class SolanaService {
                 parsed = instruction?.parsed
             }
             if (transaction 
-                && parsed
-                && parsed.type == 'transfer'
-                && parsed.info
-                && !parsed.tokenAmount
-                && parsed.info.destination === address
+                // && parsed
+                // && parsed.type == 'transfer'
+                // && parsed.info
+                // && !parsed.tokenAmount
+                // && parsed.info.destination === address
                 ) {
                 transactions.push({
                     meta: {
@@ -72,14 +72,16 @@ export class SolanaService {
                     signature: transSignature.signature,
                     slot: transSignature.slot,
                     blockTime: transaction.blockTime,
-                    from: parsed.info.source,
-                    to: parsed.info.destination,
-                    amount: this.convertLamportsToSol(parsed.lamports),
-                    amountInLamports: parsed.lamports,
+                    from: parsed?.info?.source,
+                    to: parsed?.info?.destination,
+                    amount: this.convertLamportsToSol(parsed?.lamports),
+                    amountInLamports: parsed?.lamports,
+                    parsed
                 })
             }
 
         }
+        // return (transSignatures)
         return transactions
     }
 
