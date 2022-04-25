@@ -56,12 +56,15 @@ export class SolanaService {
                 instruction = instructions?.length ? instructions[0] : null
                 parsed = instruction?.parsed
             }
-            if (transaction 
-                // && parsed
-                // && parsed.type == 'transfer'
-                // && parsed.info
-                // && !parsed.tokenAmount
-                // && parsed.info.destination === address
+
+            if (transaction
+                && !transaction?.meta?.err 
+                && transSignature.confirmationStatus === 'finalized'
+                && parsed
+                && parsed.type == 'transfer'
+                && parsed.info
+                && !parsed.tokenAmount
+                && parsed.info.destination === address
                 ) {
                 transactions.push({
                     meta: {
@@ -76,7 +79,8 @@ export class SolanaService {
                     to: parsed?.info?.destination,
                     amount: this.convertLamportsToSol(parsed?.lamports),
                     amountInLamports: parsed?.lamports,
-                    parsed
+                    parsed : parsed,
+                    // more : transaction
                 })
             }
 
