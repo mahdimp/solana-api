@@ -15,7 +15,7 @@ else if (!SolanaService.isValidCluster(SOL_NETWORK)) {
 
 const solanaService = new SolanaService(SOL_NETWORK as SolanaCluster)
 
-app.post('/transactions/in', async function (req: Request, res: Response) {
+app.post('/transactions/new', async function (req: Request, res: Response) {
   try {
     const { to, amount, secretKey } = req.body
     if (!amount || !to || !secretKey) {
@@ -33,7 +33,7 @@ app.post('/transactions/in', async function (req: Request, res: Response) {
   }
 })
 
-app.get('/transactions/:address', async function (req: Request, res: Response) {
+app.get('/transactions/in/:address', async function (req: Request, res: Response) {
   try {
     const { address } = req.params
     const transactions = await solanaService.getTransactions(address)
