@@ -78,9 +78,7 @@ export class SolanaService {
                     from: parsed?.info?.source,
                     to: parsed?.info?.destination,
                     amount: this.convertLamportsToSol(parsed?.lamports),
-                    amountInLamports: parsed?.lamports,
-                    parsed : parsed,
-                    // more : transaction
+                    amountInLamports: parsed?.lamports
                 })
             }
 
