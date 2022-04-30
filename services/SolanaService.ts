@@ -83,7 +83,6 @@ export class SolanaService {
             }
 
         }
-        // return (transSignatures)
         return transactions
     }
 
