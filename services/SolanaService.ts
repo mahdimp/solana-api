@@ -75,10 +75,10 @@ export class SolanaService {
                     signature: transSignature.signature,
                     slot: transSignature.slot,
                     blockTime: transaction.blockTime,
-                    from: parsed?.info?.source,
-                    to: parsed?.info?.destination,
-                    amount: this.convertLamportsToSol(parsed?.lamports),
-                    amountInLamports: parsed?.lamports
+                    from: parsed.info.source,
+                    to: parsed.info.destination,
+                    amount: this.convertLamportsToSol(parsed.info.lamports),
+                    amountInLamports: parsed.info.lamports
                 })
             }
 
