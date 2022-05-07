@@ -4,7 +4,7 @@ import 'dotenv/config'
 
 const app: Express = express()
 app.use(express.json())
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 1366
 const { SOL_NETWORK } = process.env
 if(!SOL_NETWORK){
   throw new Error('SOL_NETWORK is not defined')
